@@ -1,9 +1,6 @@
 ingressNginx:
   use: true
 
-kubecost:
-  use: false
-
 metricsServer:
   use: true
 

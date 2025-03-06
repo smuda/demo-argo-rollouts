@@ -23,10 +23,6 @@ ingressNginx:
   use: true
   podSecurityLevel: baseline
 
-kubecost:
-  use: false
-  podSecurityLevel: privileged
-
 metricsServer:
   use: false
   podSecurityLevel: privileged
@@ -39,22 +35,6 @@ prometheus:
   use: false
   podSecurityLevel: baseline
 
-pvProviders:
-  nfs:
-    use: false
-    podSecurityLevel: privileged
-  csiDriverNFS:
-    use: true
-
 reloader:
-  use: true
-  podSecurityLevel: restricted
-
-sealedSecrets:
-  use: true
-  namespace: kube-system
-  podSecurityLevel: restricted
-
-trivy:
   use: true
   podSecurityLevel: restricted

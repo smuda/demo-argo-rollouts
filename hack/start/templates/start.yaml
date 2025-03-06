@@ -20,7 +20,7 @@ spec:
         {{- if .Values.helmParameters }}
         {{- include "template.helmParameters" (dict "prefix" "" "data" .Values.helmParameters) | indent 8 }}
         {{- end }}
-    path: _start/
+    path: cluster/cluster-addons/_start/
     repoURL: https://github.com/smuda/demo-argo-rollouts.git
     targetRevision: {{ .Values.targetRevision }}
   syncPolicy:
