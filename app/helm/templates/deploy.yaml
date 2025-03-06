@@ -20,6 +20,7 @@ spec:
           command:
             - go run /app/main.go
           securityContext:
+            allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             runAsUser: 30000
             runAsNonRoot: true
@@ -29,6 +30,9 @@ spec:
           volumeMounts:
             - mountPath: /app
               name: go-code
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
         - name: go-code
           configMap:
