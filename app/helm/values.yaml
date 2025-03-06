@@ -1,0 +1,5 @@
+deploy:
+  use: false
+
+rollouts:
+  use: false

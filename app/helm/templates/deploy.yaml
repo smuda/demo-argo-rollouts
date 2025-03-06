@@ -1,0 +1,36 @@
+{{- if .Values.deploy.use -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cider
+spec:
+  selector:
+    matchLabels:
+      app: cider
+      type: deploy
+  template:
+    metadata:
+      labels:
+        app: cider
+        type: deploy
+    spec:
+      containers:
+        - name: main
+          image: docker.io/golang:alpine3.21
+          command:
+            - go run /app/main.go
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsUser: 30000
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /app
+              name: go-code
+      volumes:
+        - name: go-code
+          configMap:
+            name: golang-code
+{{- end -}}
