@@ -6,3 +6,4 @@ rollout:
 
 version: v1
 replicas: 5
+isGood: true

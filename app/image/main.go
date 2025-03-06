@@ -17,9 +17,14 @@ import (
 )
 
 var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "cider_processed_apples_total",
-		Help: "The total number of processed events",
+	opsGoodProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "cider_good_processed_apples_total",
+		Help: "The good number of processed apples",
+	})
+
+	opsBadProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "cider_bad_processed_apples_total",
+		Help: "The bad number of processed apples",
 	})
 )
 
@@ -32,9 +37,16 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 
 	version := os.Getenv("VERSION")
+	good := os.Getenv("GOOD")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		opsProcessed.Inc()
+		if good == "yes" {
+			fmt.Printf("Environmentvar is %s, increasing good apples", good)
+			opsGoodProcessed.Inc()
+		} else {
+			fmt.Printf("Environmentvar is %s, increasing bad apples", good)
+			opsBadProcessed.Inc()
+		}
 		t := time.Now()
 		fmt.Fprintf(w, "%s Hello, %q\n", t.Format("15:04:05"), version)
 	})
