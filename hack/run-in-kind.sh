@@ -171,6 +171,7 @@ helm --kubeconfig "${KUBECONFIG}" \
   --set argo-cd.server.certificate.enabled=true \
   --set argo-cd.server.certificate.issuer.kind=ClusterIssuer \
   --set argo-cd.server.certificate.issuer.name=lab-cluster-issuer \
+  --set argo-rollouts.controller.metrics.serviceMonitor.enabled=true \
   || exit 1
 
 

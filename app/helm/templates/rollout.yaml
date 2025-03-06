@@ -9,11 +9,19 @@ spec:
     canary:
       maxUnavailable: 0
       maxSurge: 2
+      {{- if .Values.rollout.metrics.use }}
+      analysis:
+        #args:
+        #  - name: cider
+        #    value: rollouts-demo-canary
+        templates:
+          - templateName: good-traffic
+      {{- end }}
       steps:
         - setWeight: 20
         - pause: {}
         - setWeight: 40
-        - pause: {duration: 10}
+        - pause: {duration: 30}
         - setWeight: 60
         - pause: {duration: 10}
         - setWeight: 80
