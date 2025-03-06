@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      version: v3
+      releaseName: start
+      valueFiles:
+        - values-kind.yaml
+      parameters:
+        - name: argo.common.target_revision
+          value: {{ .Values.targetRevision }}
+        {{- if .Values.helmParameters }}
+        {{- include "template.helmParameters" (dict "prefix" "" "data" .Values.helmParameters) | indent 8 }}
+        {{- end }}
+    path: _start/
+    repoURL: https://github.com/smuda/demo-argo-rollouts.git
+    targetRevision: {{ .Values.targetRevision }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

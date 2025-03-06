@@ -1,0 +1,18 @@
+quota:
+  use: true
+  hard:
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.memory: 1Gi
+
+upstream:
+  reloader:
+    reloadStrategy: annotations
+    readOnlyRootFileSystem: true
+    deployment:
+      resources:
+        requests:
+          cpu: "10m"
+          memory: "128Mi"
+        limits:
+          memory: "512Mi"

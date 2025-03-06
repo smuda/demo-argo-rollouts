@@ -1,0 +1,15 @@
+ingressNginx:
+  use: false
+
+kubecost:
+  use: false
+
+metricsServer:
+  use: true
+
+nginxIngress:
+  use: false
+
+prometheus:
+  use: true
+  podSecurityLevel: privileged

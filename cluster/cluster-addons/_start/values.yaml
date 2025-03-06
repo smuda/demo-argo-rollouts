@@ -1,0 +1,60 @@
+argo:
+  project: addons
+  common:
+    valueFiles: []
+    target_revision: main
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    apps_namespace: argocd
+    enableLabelManagement: true
+
+cert_manager:
+  use: true
+  podSecurityLevel: restricted
+
+cert_manager_config:
+  use: true
+
+grafanaOperator:
+  use: true
+  podSecurityLevel: restricted
+
+ingressNginx:
+  use: true
+  podSecurityLevel: baseline
+
+kubecost:
+  use: false
+  podSecurityLevel: privileged
+
+metricsServer:
+  use: false
+  podSecurityLevel: privileged
+
+nginxIngress:
+  use: false
+  podSecurityLevel: baseline
+
+prometheus:
+  use: false
+  podSecurityLevel: baseline
+
+pvProviders:
+  nfs:
+    use: false
+    podSecurityLevel: privileged
+  csiDriverNFS:
+    use: true
+
+reloader:
+  use: true
+  podSecurityLevel: restricted
+
+sealedSecrets:
+  use: true
+  namespace: kube-system
+  podSecurityLevel: restricted
+
+trivy:
+  use: true
+  podSecurityLevel: restricted
