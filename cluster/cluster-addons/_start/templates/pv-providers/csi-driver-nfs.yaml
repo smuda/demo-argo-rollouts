@@ -22,7 +22,7 @@ spec:
       {{- if .Values.argo.common.valueFiles }}
       valueFiles: {{ .Values.argo.common.valueFiles | toYaml | nindent 8 }}
       {{- end }}
-    path: cluster-addons/pv-providers/csi-driver-nfs/
+    path: cluster/cluster-addons/pv-providers/csi-driver-nfs/
     repoURL: https://github.com/smuda/demo-argo-rollouts.git
     targetRevision: {{ .Values.argo.common.target_revision }}
   syncPolicy:

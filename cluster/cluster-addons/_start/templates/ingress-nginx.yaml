@@ -21,7 +21,7 @@ spec:
       {{- if .Values.argo.common.valueFiles }}
       valueFiles: {{ .Values.argo.common.valueFiles | toYaml | nindent 8 }}
       {{- end }}
-    path: cluster-addons/ingress-nginx/
+    path: cluster/cluster-addons/ingress-nginx/
     repoURL: https://github.com/smuda/demo-argo-rollouts.git
     targetRevision: {{ .Values.argo.common.target_revision }}
   syncPolicy:
