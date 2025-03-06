@@ -1,5 +1,8 @@
 deploy:
   use: false
 
-rollouts:
+rollout:
   use: false
+
+version: v1
+replicas: 5

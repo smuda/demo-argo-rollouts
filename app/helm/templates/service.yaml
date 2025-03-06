@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cider
+spec:
+  selector:
+    app: cider
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

@@ -4,6 +4,12 @@ kind: Deployment
 metadata:
   name: cider
 spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: cider
@@ -18,7 +24,18 @@ spec:
         - name: main
           image: docker.io/golang:alpine3.21
           command:
-            - go run /app/main.go
+            - go
+          args:
+            - run
+            - /app/main.go
+          env:
+            - name: HOME
+              value: /goroot
+            - name: VERSION
+              value: "{{ .Values.version }}"
+          readinessProbe:
+            httpGet:
+              port: 8080
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -30,6 +47,10 @@ spec:
           volumeMounts:
             - mountPath: /app
               name: go-code
+            - mountPath: /tmp
+              name: tmp
+            - mountPath: /goroot
+              name: goroot
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -37,4 +58,10 @@ spec:
         - name: go-code
           configMap:
             name: golang-code
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1G
+        - name: goroot
+          emptyDir:
+            sizeLimit: 1G
 {{- end -}}

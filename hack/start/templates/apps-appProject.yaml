@@ -8,7 +8,7 @@ spec:
     - group: '*'
       kind: '*'
   destinations:
-    - namespace: 'apps-*'
+    - namespace: 'app-*'
       server: '*'
     - namespace: 'kube-system'
       server: '*'

@@ -3,7 +3,6 @@ package main
 import (
   "context"
   "errors"
-  "html"
   "fmt"
   "log"
   "net/http"
@@ -12,9 +11,6 @@ import (
   "syscall"
   "strconv"
   "time"
-  "crypto/tls"
-  "crypto/x509"
-  "io/ioutil"
 )
 
 func main() {
@@ -22,8 +18,11 @@ func main() {
     Addr: ":8080",
   }
 
+  version := os.Getenv("VERSION")
+
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hello, %q\n", html.EscapeString(r.URL.Path))
+    t := time.Now()
+    fmt.Fprintf(w, "%s Hello, %q\n",t.Format("15:04:05"), version)
   })
   http.HandleFunc("/wait/", wait)
 

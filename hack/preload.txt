@@ -1,5 +1,6 @@
-docker.io/grafana/grafana:9.5.17
-ghcr.io/grafana/grafana-operator:v5.9.1
+docker.io/golang:alpine3.21
+docker.io/grafana/grafana:11.3.0
+ghcr.io/grafana/grafana-operator:v5.16.0
 ghcr.io/stakater/reloader:v1.0.98
 public.ecr.aws/docker/library/redis:7.4.2-alpine
 quay.io/argoproj/argo-rollouts:v1.8.0
