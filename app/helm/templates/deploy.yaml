@@ -22,15 +22,9 @@ spec:
     spec:
       containers:
         - name: main
-          image: docker.io/golang:alpine3.21
-          command:
-            - go
-          args:
-            - run
-            - /app/main.go
+          image: docker.io/smuda/demo-rollouts:latest
+          imagePullPolicy: Always
           env:
-            - name: HOME
-              value: /goroot
             - name: VERSION
               value: "{{ .Values.version }}"
           readinessProbe:
@@ -45,23 +39,13 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - mountPath: /app
-              name: go-code
-            - mountPath: /tmp
-              name: tmp
-            - mountPath: /goroot
-              name: goroot
+            - name: tmp
+              mountPath: /tmp
       securityContext:
         seccompProfile:
           type: RuntimeDefault
       volumes:
-        - name: go-code
-          configMap:
-            name: golang-code
         - name: tmp
-          emptyDir:
-            sizeLimit: 1G
-        - name: goroot
           emptyDir:
             sizeLimit: 1G
 {{- end -}}

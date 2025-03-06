@@ -50,3 +50,10 @@ argo-cd:
 argo-rollouts:
   controller:
     replicas: 1
+  dashboard:
+    enabled: true
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - rollouts.app.127.0.0.1.nip.io

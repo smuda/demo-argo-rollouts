@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: golang-code
-data:
-{{ (.Files.Glob "code/main.go").AsConfig | indent 2 }}
