@@ -1,16 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: addons
-  namespace: {{ .Values.argo.common.apps_namespace }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
+  name: apps
+  namespace: argocd
 spec:
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
   destinations:
-    - namespace: 'addon-*'
+    - namespace: 'apps-*'
       server: '*'
     - namespace: 'kube-system'
       server: '*'
