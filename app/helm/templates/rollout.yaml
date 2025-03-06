@@ -1,24 +1,36 @@
-{{- if .Values.deploy.use -}}
-apiVersion: apps/v1
-kind: Deployment
+{{- if .Values.rollout.use -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: cider
 spec:
   replicas: {{ .Values.replicas }}
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 5
+    canary:
       maxUnavailable: 0
+      maxSurge: 2
+      steps:
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 40
+        - pause: {duration: 10}
+        - setWeight: 60
+        - pause: {duration: 10}
+        - setWeight: 80
+        - pause: {duration: 10}
+      {{- with .Values.rollout.trafficRouting }}
+      trafficRouting:
+        {{- . | toYaml | nindent 8 }}
+      {{- end}}
   selector:
     matchLabels:
       app: cider
-      type: deploy
+      type: rollout
   template:
     metadata:
       labels:
         app: cider
-        type: deploy
+        type: rollout
     spec:
       containers:
         - name: main
@@ -43,8 +55,8 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
+            - mountPath: /tmp
+              name: tmp
       securityContext:
         seccompProfile:
           type: RuntimeDefault
