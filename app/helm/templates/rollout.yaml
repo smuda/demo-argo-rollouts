@@ -9,6 +9,9 @@ spec:
     canary:
       maxUnavailable: 0
       maxSurge: 2
+      canaryMetadata:
+        labels:
+          environment: canary
       {{- if .Values.rollout.metrics.use }}
       analysis:
         #args:
@@ -26,6 +29,9 @@ spec:
         - pause: {duration: 10}
         - setWeight: 80
         - pause: {duration: 10}
+
+      stableService: cider
+      canaryService: cider-canary
       {{- with .Values.rollout.trafficRouting }}
       trafficRouting:
         {{- . | toYaml | nindent 8 }}
