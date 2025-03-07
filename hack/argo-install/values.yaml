@@ -46,6 +46,8 @@ argo-cd:
     secret:
       # This is really `password` bcrypt hashed
       argocdServerAdminPassword: $2a$10$atlthaDW9TadP0OduJCBruNQLEcoYzOFfgjRU5cwUjf3dDjbj2qIu
+    params:
+      applicationsetcontroller.enable.progressive.syncs: true
 
 argo-rollouts:
   controller:
