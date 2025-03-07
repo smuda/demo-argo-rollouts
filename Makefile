@@ -12,3 +12,12 @@ preload:
 .PHONY: start
 start:
 	./hack/run-in-kind.sh
+
+app-deploy:
+	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-deploy.yaml
+
+app-rollout:
+	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-rollout.yaml
+
+app-rollout-metrics:
+	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-rollout.yaml --set rollout.metrics.use=true
