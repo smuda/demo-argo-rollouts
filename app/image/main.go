@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
@@ -17,21 +16,16 @@ import (
 )
 
 var (
-	opsGoodProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "cider_good_processed_apples_total",
-		Help: "The good number of processed apples",
-	})
-
-	opsBadProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "cider_bad_processed_apples_total",
-		Help: "The bad number of processed apples",
-	})
+	promGoodProcessed *prometheus.CounterVec
+	promBadProcessed  *prometheus.CounterVec
 )
 
 func main() {
 	server := &http.Server{
 		Addr: ":8080",
 	}
+
+	setupMetrics()
 
 	// Expose metrics
 	http.Handle("/metrics", promhttp.Handler())
@@ -41,11 +35,12 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if good == "yes" {
-			fmt.Printf("Environmentvar is %s, increasing good apples", good)
-			opsGoodProcessed.Inc()
+			log.Printf("Environmentvar is %s, increasing good apples", good)
+
+			promGoodProcessed.With(prometheus.Labels{"role": os.Getenv("ROLE")}).Inc()
 		} else {
-			fmt.Printf("Environmentvar is %s, increasing bad apples", good)
-			opsBadProcessed.Inc()
+			log.Printf("Environmentvar is %s, increasing bad apples", good)
+			promBadProcessed.With(prometheus.Labels{"role": os.Getenv("ROLE")}).Inc()
 		}
 		t := time.Now()
 		fmt.Fprintf(w, "%s Hello, %q\n", t.Format("15:04:05"), version)
@@ -94,4 +89,25 @@ func wait(w http.ResponseWriter, r *http.Request) {
 
 	time.Sleep(time.Duration(i) * time.Millisecond)
 	fmt.Fprintf(w, "Returning after %s ms\n", milliSecondsString)
+}
+
+func setupMetrics() {
+	promGoodProcessed = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "cider_good_processed_apples_total",
+			Help: "The good number of processed apples",
+		},
+		[]string{"role"})
+
+	promBadProcessed = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "cider_bad_processed_apples_total",
+			Help: "The bad number of processed apples",
+		},
+		[]string{"role"})
+
+	prometheus.MustRegister(promGoodProcessed, promBadProcessed)
+
+	promGoodProcessed.With(prometheus.Labels{"role": os.Getenv("ROLE")}).Add(0)
+	promBadProcessed.With(prometheus.Labels{"role": os.Getenv("ROLE")}).Add(0)
 }
