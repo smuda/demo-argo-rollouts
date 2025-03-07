@@ -1,4 +1,3 @@
-{{- if .Values.rollout.use -}}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -15,30 +14,26 @@ spec:
       # promoted rollout.
       canaryMetadata:
         labels:
-          environment: canary
+          role: canary
       # metadata which will be attached to the stable pods
       stableMetadata:
         labels:
           role: stable
 
-      {{- if .Values.rollout.metrics.use }}
       analysis:
         #args:
         #  - name: cider
         #    value: rollouts-demo-canary
         templates:
           - templateName: good-traffic
-      {{- end }}
       steps:
         - setWeight: 20
-        {{- if .Values.rollout.metrics.use }}
+        - pause: {}
+        - setWeight: 40
         # an inline analysis step
         - analysis:
             templates:
               - templateName: good-traffic
-        {{- end }}
-        - setWeight: 40
-        - pause: {}
         - setWeight: 60
         - pause: {duration: 10}
         - setWeight: 80
@@ -67,6 +62,10 @@ spec:
               {{- else }}
               value: "no"
               {{- end }}
+            - name: ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['role']"
           ports:
             - containerPort: 8080
               name: http
@@ -92,4 +91,3 @@ spec:
         - name: tmp
           emptyDir:
             sizeLimit: 1G
-{{- end -}}
