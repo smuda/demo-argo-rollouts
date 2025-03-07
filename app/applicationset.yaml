@@ -4,27 +4,64 @@ metadata:
   name: app-cider
   namespace: argocd
 spec:
-  destination:
-    namespace: app-cider
-    server: https://kubernetes.default.svc
-  project: apps
-  source:
-    helm:
-      releaseName: cider
-      valueFiles:
-      - values-deploy.yaml
-      version: v3
-    path: app/helm/
-    repoURL: https://github.com/smuda/demo-argo-rollouts.git
-    targetRevision: feature/build
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    managedNamespaceMetadata:
+  goTemplate: true
+  goTemplateOptions: [ "missingkey=error" ]
+  generators:
+    - list:
+        elements:
+          - cluster: st
+            branch: feature/build
+          - cluster: pp
+            branch: feature/build
+          - cluster: ct
+            branch: feature/build
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+        - matchExpressions:
+            - key: envLabel
+              operator: NotIn
+              values:
+                - ct
+            #- key: envLabel
+            #  operator: In
+            #  values:
+            #    - pp
+            #- key: envLabel
+            #  operator: In
+            #  values:
+            #    - ct
+  template:
+    metadata:
+      name: 'app-{{.cluster}}-cider'
       labels:
-        pod-security.kubernetes.io/audit: restricted
-        pod-security.kubernetes.io/enforce: restricted
-        pod-security.kubernetes.io/warn: restricted
-    syncOptions:
-    - CreateNamespace=true
+        envLabel: '{{.cluster}}'
+    spec:
+      destination:
+        namespace: 'app-{{.cluster}}-cider'
+        server: https://kubernetes.default.svc
+      project: apps
+      source:
+        helm:
+          releaseName: cider
+          valueFiles:
+            - values-deploy.yaml
+            - values-applicationset.yaml
+            - 'values-{{.cluster}}.yaml'
+          #values: version=v1
+          version: v3
+        path: app/helm/
+        repoURL: https://github.com/smuda/demo-argo-rollouts.git
+        targetRevision: '{{ .branch }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/audit: restricted
+            pod-security.kubernetes.io/enforce: restricted
+            pod-security.kubernetes.io/warn: restricted
+        syncOptions:
+         - CreateNamespace=true
