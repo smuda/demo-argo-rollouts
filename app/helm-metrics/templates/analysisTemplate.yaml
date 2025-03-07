@@ -1,0 +1,18 @@
+{{- if .Values.rollout.metrics.use }}
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+    name: good-traffic
+spec:
+    metrics:
+      - name: failures
+        count: 10
+        interval: 10s
+        successCondition: result[0] < 10.0
+        failureLimit: 2
+        provider:
+          prometheus:
+            address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc.cluster.local:9090
+            query: |
+              sum(cider_bad_processed_apples_total{namespace="{{.Release.Namespace }}"})
+{{- end }}

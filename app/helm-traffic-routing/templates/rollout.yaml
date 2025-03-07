@@ -9,18 +9,17 @@ spec:
     canary:
       maxUnavailable: 0
       maxSurge: 2
-
-      # Metadata which will be attached to the canary pods. This metadata will
-      # only exist during an update, since there are no canary pods in a fully
-      # promoted rollout.
       canaryMetadata:
         labels:
           environment: canary
-      # metadata which will be attached to the stable pods
-      stableMetadata:
-        labels:
-          role: stable
-
+      {{- if .Values.rollout.metrics.use }}
+      analysis:
+        #args:
+        #  - name: cider
+        #    value: rollouts-demo-canary
+        templates:
+          - templateName: good-traffic
+      {{- end }}
       steps:
         - setWeight: 20
         - pause: {}
@@ -31,6 +30,12 @@ spec:
         - setWeight: 80
         - pause: {duration: 10}
 
+      stableService: cider
+      canaryService: cider-canary
+      {{- with .Values.rollout.trafficRouting }}
+      trafficRouting:
+        {{- . | toYaml | nindent 8 }}
+      {{- end}}
   selector:
     matchLabels:
       app: cider

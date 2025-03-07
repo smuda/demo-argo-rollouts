@@ -20,4 +20,4 @@ app-rollout:
 	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-rollout.yaml
 
 app-rollout-metrics:
-	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-rollout.yaml --set rollout.metrics.use=true
+	helm -n app-cider upgrade -i cider app/helm-metrics -f app/helm/values-rollout.yaml --set rollout.metrics.use=true

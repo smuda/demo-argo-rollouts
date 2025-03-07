@@ -1,45 +1,24 @@
-{{- if .Values.rollout.use -}}
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+{{- if .Values.deploy.use -}}
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: cider
 spec:
   replicas: {{ .Values.replicas }}
   strategy:
-    canary:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 5
       maxUnavailable: 0
-      maxSurge: 2
-
-      # Metadata which will be attached to the canary pods. This metadata will
-      # only exist during an update, since there are no canary pods in a fully
-      # promoted rollout.
-      canaryMetadata:
-        labels:
-          environment: canary
-      # metadata which will be attached to the stable pods
-      stableMetadata:
-        labels:
-          role: stable
-
-      steps:
-        - setWeight: 20
-        - pause: {}
-        - setWeight: 40
-        - pause: {duration: 30}
-        - setWeight: 60
-        - pause: {duration: 10}
-        - setWeight: 80
-        - pause: {duration: 10}
-
   selector:
     matchLabels:
       app: cider
-      type: rollout
+      type: deploy
   template:
     metadata:
       labels:
         app: cider
-        type: rollout
+        type: deploy
     spec:
       containers:
         - name: main
@@ -70,8 +49,8 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - mountPath: /tmp
-              name: tmp
+            - name: tmp
+              mountPath: /tmp
       securityContext:
         seccompProfile:
           type: RuntimeDefault
