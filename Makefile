@@ -13,11 +13,16 @@ preload:
 start:
 	./hack/run-in-kind.sh
 
-app-deploy:
+.PHONY: namespace
+namespace:
+	oc get ns app-cider || oc create ns app-cider
+	oc project app-cider
+
+app-deploy: namespace
 	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-deploy.yaml
 
-app-rollout:
+app-rollout: namespace
 	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-rollout.yaml
 
-app-rollout-metrics:
+app-rollout-metrics: namespace
 	helm -n app-cider upgrade -i cider app/helm-metrics -f app/helm/values-rollout.yaml --set rollout.metrics.use=true

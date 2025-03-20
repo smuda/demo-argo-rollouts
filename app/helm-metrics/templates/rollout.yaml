@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
         - name: main
-          image: docker.io/smuda/demo-rollouts:latest
+          image: {{ .Values.image }}
           imagePullPolicy: Always
           env:
             - name: VERSION
