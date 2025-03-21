@@ -8,4 +8,4 @@ version: v1
 replicas: 5
 isGood: true
 
-image: docker.io/argoproj/rollouts-demo:red
+image: docker.io/argoproj/rollouts-demo:blue
