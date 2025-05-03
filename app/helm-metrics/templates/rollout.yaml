@@ -15,7 +15,7 @@ spec:
       canaryMetadata:
         labels:
           role: canary
-      # metadata which will be attached to the stable pods
+      # metadata, which will be attached to the stable pods
       stableMetadata:
         labels:
           role: stable
