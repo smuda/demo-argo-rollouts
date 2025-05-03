@@ -10,13 +10,13 @@ spec:
       maxUnavailable: 0
       maxSurge: 2
 
-      # Metadata which will be attached to the canary pods. This metadata will
+      # Metadata, which will be attached to the canary pods. This metadata will
       # only exist during an update, since there are no canary pods in a fully
       # promoted rollout.
       canaryMetadata:
         labels:
           role: canary
-      # metadata which will be attached to the stable pods
+      # metadata, which will be attached to the stable pods
       stableMetadata:
         labels:
           role: stable
