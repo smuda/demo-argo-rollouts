@@ -16,8 +16,6 @@ upstream:
     # Disable standard approver, use policy approver instead
     #- "--controllers=*,-certificaterequests-approver"
   namespace: addon-cert-manager
-  image:
-    repository: quay.io/jetstack/cert-manager-controller
   resources:
    requests:
      cpu: 100m
@@ -41,8 +39,6 @@ upstream:
   webhook:
     deploymentAnnotations:
       reloader.stakater.com/auto: "true"
-    image:
-      repository: quay.io/jetstack/cert-manager-webhook
     containerSecurityContext:
       allowPrivilegeEscalation: false
       capabilities:
@@ -62,8 +58,6 @@ upstream:
   cainjector:
     deploymentAnnotations:
       reloader.stakater.com/auto: "true"
-    image:
-      repository: quay.io/jetstack/cert-manager-cainjector
     containerSecurityContext:
       allowPrivilegeEscalation: false
       capabilities:
@@ -80,8 +74,6 @@ upstream:
         memory: 256Mi
   ### startupapicheck ###
   startupapicheck:
-    image:
-      repository: quay.io/jetstack/cert-manager-ctl
     containerSecurityContext:
       allowPrivilegeEscalation: false
       capabilities:
