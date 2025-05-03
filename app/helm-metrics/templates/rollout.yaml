@@ -24,19 +24,22 @@ spec:
         templateName: success-rate
         args:
           - name: ingress
-            value: app-cider
+            value: cider
       steps:
         - setWeight: 20
-        - pause: {}
-        - setWeight: 40
         # an inline analysis step
         - analysis:
             templates:
-              - templateName: success-rate
+              - templateName: success
+            args:
+              - name: ingress
+                value: cider
+        - setWeight: 40
+        - pause: {duration: 20}
         - setWeight: 60
-        - pause: {duration: 10}
+        - pause: {duration: 20}
         - setWeight: 80
-        - pause: {duration: 10}
+        - pause: {duration: 20}
 
   selector:
     matchLabels:
