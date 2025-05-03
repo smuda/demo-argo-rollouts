@@ -1,0 +1,5 @@
+docker.io/argoproj/rollouts-demo:blue
+docker.io/argoproj/rollouts-demo:green
+docker.io/argoproj/rollouts-demo:purple
+docker.io/argoproj/rollouts-demo:red
+docker.io/argoproj/rollouts-demo:bad-red
