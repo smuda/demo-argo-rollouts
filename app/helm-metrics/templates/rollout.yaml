@@ -54,7 +54,7 @@ spec:
       containers:
         - name: main
           image: {{ .Values.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: VERSION
               value: "{{ .Values.version }}"
