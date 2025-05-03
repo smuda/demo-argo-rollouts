@@ -1,0 +1,34 @@
+{{ if .Values.grafanaOperator.use }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: addon-grafana-dashboards
+  namespace: {{ .Values.argo.common.apps_namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+{{- if .Values.argo.common.finalizers }}
+  finalizers: {{ .Values.argo.common.finalizers | toYaml | nindent 4 }}
+{{- end }}
+spec:
+  destination:
+    namespace: addon-grafana-operator
+    server: https://kubernetes.default.svc
+  project: {{ .Values.argo.project }}
+  source:
+    helm:
+      version: v3
+      releaseName: operator
+      {{- if .Values.argo.common.valueFiles }}
+      valueFiles: {{ .Values.argo.common.valueFiles | toYaml | nindent 8 }}
+      {{- end }}
+    path: cluster/cluster-addons/grafana-dashboards/
+    repoURL: https://github.com/smuda/demo-argo-rollouts.git
+    targetRevision: {{ .Values.argo.common.target_revision }}
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+    automated:
+      prune: true
+      selfHeal: true
+{{ end }}

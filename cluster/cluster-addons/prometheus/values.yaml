@@ -1,0 +1,24 @@
+upstream:
+  nameOverride: kube-prometheus-stack
+
+  grafana:
+    enabled: false
+  nodeExporter:
+    enabled: false
+
+  prometheus:
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - prometheus.apps.k8s1.example.com
+    prometheusSpec:
+      scrapeInterval: 10s
+      serviceMonitorSelectorNilUsesHelmValues: false
+
+  alertmanager:
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - alert-manager.apps.k8s1.example.com

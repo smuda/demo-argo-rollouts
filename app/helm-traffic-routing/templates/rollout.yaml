@@ -1,0 +1,110 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: cider
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    canary:
+      maxUnavailable: 0
+      maxSurge: 2
+
+      # Metadata which will be attached to the canary pods. This metadata will
+      # only exist during an update, since there are no canary pods in a fully
+      # promoted rollout.
+      canaryMetadata:
+        labels:
+          role: canary
+      # metadata, which will be attached to the stable pods
+      stableMetadata:
+        labels:
+          role: stable
+
+      analysis:
+        templates:
+          - templateName: success-rate
+        args:
+          - name: ingress
+            value: cider
+      steps:
+        - setCanaryScale:
+            weight: 50
+        - setWeight: 10
+        - pause: {duration: 20}
+
+        - setWeight: 35
+        - pause: {duration: 20}
+
+        - setCanaryScale:
+            weight: 100
+        - setWeight: 50
+        - pause: {duration: 20}
+
+        - setWeight: 75
+        - pause: {duration: 20}
+
+      canaryService: cider-canary
+      stableService: cider-stable
+
+      trafficRouting:
+        nginx:
+          stableIngress: cider
+
+  selector:
+    matchLabels:
+      app: cider
+      type: rollout
+  template:
+    metadata:
+      labels:
+        app: cider
+        type: rollout
+    spec:
+      containers:
+        - name: main
+          image: {{ .Values.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: VERSION
+              value: "{{ .Values.version }}"
+            - name: GOOD
+              {{ if .Values.isGood }}
+              value: "yes"
+              {{- else }}
+              value: "no"
+              {{- end }}
+            - name: ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['role']"
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              port: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 30000
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1G

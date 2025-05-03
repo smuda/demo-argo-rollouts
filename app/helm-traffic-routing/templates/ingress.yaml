@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cider
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: cider.apps.127.0.0.1.nip.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: cider-stable
+                port:
+                  name: http
+            path: /
+            pathType: ImplementationSpecific

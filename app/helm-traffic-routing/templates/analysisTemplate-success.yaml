@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success
+spec:
+  args:
+    - name: ingress
+  metrics:
+    - name: success
+      interval: 5s
+      successCondition: result[0] > 10
+      count: 12
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc:9090
+          query: >+
+            sum (
+              irate(
+                nginx_ingress_controller_requests{ingress="cider",status="200"} [1m]
+              )
+            )
+    - name: failure
+      interval: 10s
+      failureCondition: result[0] > 5
+      failureLimit: 1
+      count: 10
+      provider:
+        prometheus:
+          address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc:9090
+          query: >+
+            sum (
+              irate(
+                nginx_ingress_controller_requests{ingress="cider",status!="200"} [1m]
+              )
+            )

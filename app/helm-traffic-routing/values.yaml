@@ -1,0 +1,13 @@
+deploy:
+  use: false
+
+rollout:
+  use: true
+  metrics:
+    use: false
+
+version: v1
+replicas: 2
+isGood: true
+
+image: docker.io/argoproj/rollouts-demo:blue

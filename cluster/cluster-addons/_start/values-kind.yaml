@@ -1,0 +1,17 @@
+argo:
+  common:
+    valueFiles:
+      - values-kind.yaml
+
+ingressNginx:
+  use: true
+
+metricsServer:
+  use: true
+
+nginxIngress:
+  use: false
+
+prometheus:
+  use: true
+  podSecurityLevel: privileged

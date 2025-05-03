@@ -1,0 +1,73 @@
+argo-cd:
+  dex:
+    enabled: false
+    metrics:
+      enabled: true
+  controller:
+    env:
+      - name: ARGOCD_SYNC_WAVE_DELAY
+        value: "10"
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  redis:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  repoServer:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  server:
+    extraArgs:
+      - "--insecure"
+    config:
+      repositories: |
+        - type: helm
+          name: argo-cd
+          url: https://argoproj.github.io/argo-helm
+    certificate:
+      domain: argocd.app.127.0.0.1.nip.io
+      enabled: false
+    ingress:
+      enabled: true
+      tls: true
+      hostname: argocd.app.127.0.0.1.nip.io
+      ingressClassName: nginx
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    extensions:
+      enabled: true
+      extensionList:
+        - name: rollout-extension
+          env:
+            - name: EXTENSION_URL
+              value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.4/extension.tar
+  configs:
+    secret:
+      # This is really `password` bcrypt hashed
+      argocdServerAdminPassword: $2a$10$atlthaDW9TadP0OduJCBruNQLEcoYzOFfgjRU5cwUjf3dDjbj2qIu
+    params:
+      applicationsetcontroller.enable.progressive.syncs: true
+
+argo-rollouts:
+  controller:
+    replicas: 1
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+  dashboard:
+    enabled: true
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - rollouts.app.127.0.0.1.nip.io
+    replicas: 1
