@@ -13,6 +13,7 @@ upstream:
       hosts:
         - prometheus.apps.k8s1.example.com
     prometheusSpec:
+      scrapeInterval: 10s
       serviceMonitorSelectorNilUsesHelmValues: false
 
   alertmanager:
