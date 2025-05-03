@@ -7,9 +7,9 @@ spec:
     - name: ingress
   metrics:
     - name: success
-      interval: 10s
+      interval: 5s
       successCondition: result[0] > 10
-      count: 10
+      count: 12
       provider:
         prometheus:
           address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc:9090
