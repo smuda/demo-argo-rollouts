@@ -21,7 +21,8 @@ spec:
           role: stable
 
       analysis:
-        templateName: success-rate
+        templates:
+          - templateName: success-rate
         args:
           - name: ingress
             value: cider

@@ -8,14 +8,15 @@ spec:
   metrics:
     - name: success-rate
       interval: 10s
-      #successCondition: result[0] >= 90
+      successCondition: result[0] >= 90
       failureCondition: result[0] < 90
       #failureCondition: result < 90
       #failureLimit: 2
       provider:
         prometheus:
-          address: http://prometheus-operator-prometheus.prometheus-operator:9090
+          address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc:9090
           query: >+
-            100 * sum (irate(nginx_ingress_controller_requests{ingress="cider",status="200"} [60s]))
+            100 *
+            sum (irate(nginx_ingress_controller_requests{ingress="cider",status="200"} [60s]))
             /
             sum(irate(nginx_ingress_controller_requests{ingress="cider"}[60s]))
