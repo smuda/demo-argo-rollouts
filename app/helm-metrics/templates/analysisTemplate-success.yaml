@@ -22,6 +22,7 @@ spec:
     - name: failure
       interval: 10s
       failureCondition: result[0] > 5
+      failureLimit: 1
       count: 10
       provider:
         prometheus:
