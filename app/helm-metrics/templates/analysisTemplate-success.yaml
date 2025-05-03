@@ -8,25 +8,27 @@ spec:
   metrics:
     - name: success
       interval: 10s
-      successCondition: result > 10
+      successCondition: result[0] > 10
       count: 10
       provider:
         prometheus:
-          address: http://prometheus-operator-prometheus.prometheus-operator:9090
+          address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc:9090
           query: >+
-            sum(irate(
-              nginx_ingress_controller_requests{ingress="cider",status="200"}
-
+            sum (
+              irate(
+                nginx_ingress_controller_requests{ingress="cider",status="200"} [1m]
+              )
             )
     - name: failure
       interval: 10s
-      failureCondition: result > 5
+      failureCondition: result[0] > 5
       count: 10
       provider:
         prometheus:
-          address: http://prometheus-operator-prometheus.prometheus-operator:9090
+          address: http://prometheus-kube-prometheus-prometheus.addon-prometheus.svc:9090
           query: >+
-            sum(irate(
-              nginx_ingress_controller_requests{ingress="cider",status!="200"}
-
+            sum (
+              irate(
+                nginx_ingress_controller_requests{ingress="cider",status!="200"} [1m]
+              )
             )
