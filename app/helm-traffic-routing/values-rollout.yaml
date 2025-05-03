@@ -1,6 +1,0 @@
-rollout:
-  use: true
-
-
-  metrics:
-    use: false

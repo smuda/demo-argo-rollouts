@@ -26,7 +26,10 @@ app-rollout: namespace
 	helm -n app-cider upgrade -i cider app/helm -f app/helm/values-rollout.yaml
 
 app-rollout-metrics: namespace
-	helm -n app-cider upgrade -i cider app/helm-metrics -f app/helm/values-rollout.yaml --set rollout.metrics.use=true
+	helm -n app-cider upgrade -i cider app/helm-metrics
+
+app-rollout-traffic: namespace
+	helm -n app-cider upgrade -i cider app/helm-traffic-routing
 
 app-rollout-get:
 	kubectl argo rollouts get rollout cider

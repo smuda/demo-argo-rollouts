@@ -1,4 +1,3 @@
-{{- if .Values.rollout.use -}}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -9,35 +8,47 @@ spec:
     canary:
       maxUnavailable: 0
       maxSurge: 2
+
+      # Metadata which will be attached to the canary pods. This metadata will
+      # only exist during an update, since there are no canary pods in a fully
+      # promoted rollout.
       canaryMetadata:
         labels:
-          environment: canary
-      {{- if .Values.rollout.metrics.use }}
-      analysis:
-        #args:
-        #  - name: cider
-        #    value: rollouts-demo-canary
-        templates:
-          - templateName: good-traffic
-      {{- end }}
-      steps:
-        - setWeight: 20
-        - pause: {}
-        - setWeight: 40
-        - pause: {duration: 30}
-        - setWeight: 60
-        - pause: {duration: 10}
-        - setWeight: 80
-        - pause: {duration: 10}
+          role: canary
+      # metadata, which will be attached to the stable pods
+      stableMetadata:
+        labels:
+          role: stable
 
-      stableService: cider
+      analysis:
+        templates:
+          - templateName: success-rate
+        args:
+          - name: ingress
+            value: cider
+      steps:
+        - setCanaryScale:
+            weight: 50
+        - setWeight: 10
+        - pause: {duration: 20}
+
+        - setWeight: 35
+        - pause: {duration: 20}
+
+        - setCanaryScale:
+            weight: 100
+        - setWeight: 50
+        - pause: {duration: 20}
+
+        - setWeight: 75
+        - pause: {duration: 20}
+
       canaryService: cider-canary
+      stableService: cider-stable
+
       trafficRouting:
         nginx:
-          # Reference to an Ingress which has a rule pointing to the stable service (e.g. rollouts-demo-stable)
-          # This ingress will be cloned with a new name, in order to achieve NGINX traffic splitting.
           stableIngress: cider
-          canaryIngress: cider-canary
 
   selector:
     matchLabels:
@@ -51,7 +62,7 @@ spec:
     spec:
       containers:
         - name: main
-          image: docker.io/smuda/demo-rollouts:latest
+          image: {{ .Values.image }}
           imagePullPolicy: IfNotPresent
           env:
             - name: VERSION
@@ -62,6 +73,10 @@ spec:
               {{- else }}
               value: "no"
               {{- end }}
+            - name: ROLE
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['role']"
           ports:
             - containerPort: 8080
               name: http
@@ -69,6 +84,12 @@ spec:
           readinessProbe:
             httpGet:
               port: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -87,4 +108,3 @@ spec:
         - name: tmp
           emptyDir:
             sizeLimit: 1G
-{{- end -}}

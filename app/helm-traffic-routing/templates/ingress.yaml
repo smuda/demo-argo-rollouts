@@ -10,7 +10,7 @@ spec:
         paths:
           - backend:
               service:
-                name: cider
+                name: cider-stable
                 port:
                   name: http
             path: /

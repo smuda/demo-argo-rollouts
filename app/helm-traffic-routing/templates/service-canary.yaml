@@ -4,6 +4,7 @@ metadata:
   name: cider-canary
   labels:
     app: cider
+    role: canary
 spec:
   selector:
     app: cider
